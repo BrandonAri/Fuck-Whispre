@@ -11,7 +11,8 @@ APP_NAME="Fuck Whispre"
 EXECUTABLE_NAME="FuckWisprFlow"
 BUNDLE_ID="com.brandon.FuckWisprFlow"
 MIN_SYSTEM_VERSION="14.0"
-VERSION="1.0.0"
+VERSION="1.0.1"
+BUILD_NUMBER="2"
 DEFAULT_IDENTITY="91979A25F16143B38EEAD518501C7EAC113F4D52"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -63,7 +64,7 @@ cat >"$INFO_PLIST" <<PLIST
 <key>CFBundleDisplayName</key><string>$APP_NAME</string>
 <key>CFBundlePackageType</key><string>APPL</string>
 <key>CFBundleShortVersionString</key><string>$VERSION</string>
-<key>CFBundleVersion</key><string>1</string>
+<key>CFBundleVersion</key><string>$BUILD_NUMBER</string>
 <key>CFBundleIconFile</key><string>AppIcon</string>
 <key>LSMinimumSystemVersion</key><string>$MIN_SYSTEM_VERSION</string>
 <key>LSUIElement</key><true/>
