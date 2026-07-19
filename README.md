@@ -27,6 +27,10 @@ Everything runs offline on your local machine.
 
 No internet required.
 
+The bundled multilingual Whisper model automatically detects the spoken language.
+
+Every Fn recording held for at least 0.5 seconds is sent to Whisper. There is no volume or speech-detection gate.
+
 ## Requirements
 
 - macOS

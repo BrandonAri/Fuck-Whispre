@@ -4,7 +4,6 @@ import Foundation
 final class AudioRecorder: @unchecked Sendable {
     struct Result: Sendable {
         let file: URL
-        let hasSpeech: Bool
         let duration: TimeInterval
         let rmsDecibels: Float
         let peakDecibels: Float
@@ -131,7 +130,6 @@ final class AudioRecorder: @unchecked Sendable {
         let duration = sampleRate > 0 ? Double(stats.frameCount) / sampleRate : 0
         return Result(
             file: url,
-            hasSpeech: Self.containsMeaningfulAudio(rms: rms, peak: stats.peak),
             duration: duration,
             rmsDecibels: Self.decibels(rms),
             peakDecibels: Self.decibels(stats.peak),
@@ -150,14 +148,6 @@ final class AudioRecorder: @unchecked Sendable {
         engine.reset()
         onLevel?(0)
         return url
-    }
-
-    // This gate exists only to reject a genuinely empty microphone stream. A
-    // normal speaking-volume threshold is brittle across built-in microphones,
-    // AirPods, input-gain settings, and distance from the Mac. Quiet but real
-    // audio should always be handed to Whisper.
-    static func containsMeaningfulAudio(rms: Float, peak: Float) -> Bool {
-        peak >= 0.003_16 || rms >= 0.000_8
     }
 
     private static func decibels(_ amplitude: Float) -> Float {

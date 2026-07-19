@@ -10,7 +10,6 @@ final class SettingsWindowController: NSWindowController {
     private let modelStatus = NSTextField(labelWithString: "")
     private let modelAction = NSButton()
     private let downloadProgress = NSProgressIndicator()
-    private let silenceCheckbox = NSButton(checkboxWithTitle: "Ignore silent or accidental Fn presses", target: nil, action: nil)
     private let microphoneStatus = NSTextField(labelWithString: "")
     private let accessibilityStatus = NSTextField(labelWithString: "")
     private var refreshTimer: Timer?
@@ -87,13 +86,13 @@ final class SettingsWindowController: NSWindowController {
         ])
         let modelSection = section(title: "Transcription model", views: [modelGrid])
 
-        silenceCheckbox.target = self
-        silenceCheckbox.action = #selector(silencePreferenceChanged)
         let hotkeyValue = NSTextField(labelWithString: "Hold Fn · Fn + Space latches · Space finishes · Esc cancels")
         hotkeyValue.textColor = .secondaryLabelColor
+        let minimumValue = NSTextField(labelWithString: "Every recording at least 0.5 seconds is sent to Whisper")
+        minimumValue.textColor = .secondaryLabelColor
         let behaviorGrid = settingsGrid(rows: [
             ("Hotkey", hotkeyValue),
-            ("Detection", silenceCheckbox)
+            ("Minimum", minimumValue)
         ])
         let behaviorSection = section(title: "Behavior", views: [behaviorGrid])
 
@@ -177,8 +176,6 @@ final class SettingsWindowController: NSWindowController {
         let active = ModelManager.shared.activeSelection()
         modelPopup.selectItem(at: WhisperModelSize.allCases.firstIndex(of: active.size) ?? 1)
         languagePopup.selectItem(at: TranscriptionLanguage.allCases.firstIndex(of: active.language) ?? 0)
-        let defaults = UserDefaults.standard
-        silenceCheckbox.state = (defaults.object(forKey: "ignoreSilentRecordings") == nil || defaults.bool(forKey: "ignoreSilentRecordings")) ? .on : .off
         refreshModelState()
         refreshPermissions()
     }
@@ -264,10 +261,6 @@ final class SettingsWindowController: NSWindowController {
             self?.languagePopup.isEnabled = true
             self?.refreshModelState()
         }
-    }
-
-    @objc private func silencePreferenceChanged() {
-        UserDefaults.standard.set(silenceCheckbox.state == .on, forKey: "ignoreSilentRecordings")
     }
 
     @objc private func refreshPermissions() {
