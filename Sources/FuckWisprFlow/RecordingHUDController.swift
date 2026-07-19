@@ -218,7 +218,7 @@ final class RecordingHUDController {
 
             progress.leadingAnchor.constraint(equalTo: processingGroup.leadingAnchor, constant: 18),
             progress.centerYAnchor.constraint(equalTo: processingGroup.centerYAnchor),
-            progress.widthAnchor.constraint(equalToConstant: 78),
+            progress.widthAnchor.constraint(equalToConstant: 64),
             progress.heightAnchor.constraint(equalToConstant: 8),
             processingLabel.leadingAnchor.constraint(equalTo: progress.trailingAnchor, constant: 12),
             processingLabel.trailingAnchor.constraint(equalTo: processingGroup.trailingAnchor, constant: -12),
@@ -330,6 +330,10 @@ private final class IndeterminateProgressView: NSView {
 
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
+        NSGraphicsContext.saveGraphicsState()
+        defer { NSGraphicsContext.restoreGraphicsState() }
+        NSBezierPath(roundedRect: bounds, xRadius: bounds.height / 2, yRadius: bounds.height / 2).addClip()
+
         NSColor.white.withAlphaComponent(0.14).setFill()
         NSBezierPath(roundedRect: bounds, xRadius: bounds.height / 2, yRadius: bounds.height / 2).fill()
 
@@ -337,7 +341,7 @@ private final class IndeterminateProgressView: NSView {
         if isCompleted {
             NSBezierPath(roundedRect: bounds, xRadius: bounds.height / 2, yRadius: bounds.height / 2).fill()
         } else {
-            let width = bounds.width * 0.34
+            let width = bounds.width * 0.30
             let travel = bounds.width + width
             let x = phase * travel - width
             NSBezierPath(

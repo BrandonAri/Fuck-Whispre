@@ -26,21 +26,14 @@ enum WhisperModelSize: String, CaseIterable, Sendable {
 }
 
 enum TranscriptionLanguage: String, CaseIterable, Sendable {
-    case english
     case multilingual
 
     var title: String {
-        switch self {
-        case .english: "English"
-        case .multilingual: "Auto-detect languages"
-        }
+        "Auto-detect all supported languages"
     }
 
     var whisperArgument: String {
-        switch self {
-        case .english: "en"
-        case .multilingual: "auto"
-        }
+        "auto"
     }
 }
 
@@ -49,8 +42,7 @@ struct ModelSelection: Equatable, Sendable {
     var language: TranscriptionLanguage
 
     var filename: String {
-        let suffix = language == .english ? ".en" : ""
-        return "ggml-\(size.rawValue)\(suffix).bin"
+        "ggml-\(size.rawValue).bin"
     }
 
     var displayName: String {
@@ -60,7 +52,7 @@ struct ModelSelection: Equatable, Sendable {
 
 struct ModelManager: Sendable {
     static let shared = ModelManager()
-    static let bundledDefault = ModelSelection(size: .base, language: .english)
+    static let bundledDefault = ModelSelection(size: .base, language: .multilingual)
 
     private let sizeKey = "activeModelSize"
     private let languageKey = "activeModelLanguage"
@@ -68,7 +60,7 @@ struct ModelManager: Sendable {
     func activeSelection() -> ModelSelection {
         let defaults = UserDefaults.standard
         let size = WhisperModelSize(rawValue: defaults.string(forKey: sizeKey) ?? "") ?? .base
-        let language = TranscriptionLanguage(rawValue: defaults.string(forKey: languageKey) ?? "") ?? .english
+        let language = TranscriptionLanguage(rawValue: defaults.string(forKey: languageKey) ?? "") ?? .multilingual
         let selected = ModelSelection(size: size, language: language)
         return modelURL(for: selected) != nil ? selected : Self.bundledDefault
     }

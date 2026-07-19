@@ -54,7 +54,7 @@ final class DictationController {
     private var started = false
     private var fnIsHeld = false
     private var latchRequested = false
-    private var recordingStartedAt: ContinuousClock.Instant?
+    private var fnPressedAt: ContinuousClock.Instant?
     private var transcriptionTask: Task<Void, Never>?
     private var pendingRecordingStartID: UUID?
 
@@ -100,6 +100,7 @@ final class DictationController {
         guard status != .recording, status != .handsFreeRecording, status != .transcribing, status != .typing else { return }
         fnIsHeld = true
         latchRequested = false
+        fnPressedAt = .now
         let startID = UUID()
         pendingRecordingStartID = startID
         AppLog.dictation.info("Fn pressed; microphone authorization=\(String(describing: AVCaptureDevice.authorizationStatus(for: .audio)), privacy: .public)")
@@ -136,7 +137,6 @@ final class DictationController {
         do {
             try recorder.start()
             pendingRecordingStartID = nil
-            recordingStartedAt = .now
             status = latchRequested ? .handsFreeRecording : .recording
             AppLog.audio.info("Recording started")
         } catch {
@@ -153,6 +153,7 @@ final class DictationController {
             finishRecording()
         } else if status != .handsFreeRecording {
             pendingRecordingStartID = nil
+            fnPressedAt = nil
         }
     }
 
@@ -170,34 +171,24 @@ final class DictationController {
     private func finishRecording() {
         guard status == .recording || status == .handsFreeRecording else { return }
         latchRequested = false
-        let duration = recordingStartedAt.map { $0.duration(to: .now) } ?? .zero
-        recordingStartedAt = nil
+        let holdDuration = fnPressedAt.map { $0.duration(to: .now) } ?? .zero
+        fnPressedAt = nil
 
         do {
             let recording = try recorder.stop()
             let measuredDuration = recording.duration
             let fileSize = (try? recording.file.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
             AppLog.audio.info(
-                "Recording stopped: wallSeconds=\(Self.seconds(duration), privacy: .public), audioSeconds=\(measuredDuration, privacy: .public), frames=\(recording.frameCount), bytes=\(fileSize), rmsDB=\(recording.rmsDecibels, privacy: .public), peakDB=\(recording.peakDecibels, privacy: .public), meaningful=\(recording.hasSpeech)"
+                "Recording stopped: heldSeconds=\(Self.seconds(holdDuration), privacy: .public), audioSeconds=\(measuredDuration, privacy: .public), frames=\(recording.frameCount), bytes=\(fileSize), rmsDB=\(recording.rmsDecibels, privacy: .public), peakDB=\(recording.peakDecibels, privacy: .public)"
             )
-            if duration < .milliseconds(300) || measuredDuration < 0.25 {
-                AppLog.audio.info("Discarding recording shorter than 250 ms")
-                try? FileManager.default.removeItem(at: recording.file)
-                status = .ready
-                return
-            }
-            let defaults = UserDefaults.standard
-            let ignoreSilence = defaults.object(forKey: "ignoreSilentRecordings") == nil
-                ? true
-                : defaults.bool(forKey: "ignoreSilentRecordings")
-            if ignoreSilence && !recording.hasSpeech {
-                AppLog.audio.info("Discarding near-silent microphone stream")
+            if !DictationPolicy.shouldTranscribe(holdDuration: Self.seconds(holdDuration)) {
+                AppLog.audio.info("Discarding Fn press shorter than 0.5 seconds")
                 try? FileManager.default.removeItem(at: recording.file)
                 status = .ready
                 return
             }
             status = .transcribing
-            AppLog.whisper.info("Sending recording to local Whisper")
+            AppLog.whisper.info("Sending recording to local Whisper without audio-content rejection")
             transcriptionTask = Task { [weak self] in await self?.transcribeAndType(recording.file) }
         } catch {
             AppLog.audio.error("Could not finish recording: \(error.localizedDescription, privacy: .public)")
@@ -208,7 +199,7 @@ final class DictationController {
     private func cancelCurrentDictation() {
         latchRequested = false
         pendingRecordingStartID = nil
-        recordingStartedAt = nil
+        fnPressedAt = nil
         if status == .recording || status == .handsFreeRecording {
             if let file = recorder.cancel() { try? FileManager.default.removeItem(at: file) }
             status = .ready
