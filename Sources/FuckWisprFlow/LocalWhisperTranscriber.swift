@@ -50,13 +50,20 @@ actor LocalWhisperTranscriber {
 
     func warmUp() async {
         let selection = ModelManager.shared.activeSelection()
-        _ = try? await ensureServer(for: selection)
+        do {
+            AppLog.whisper.info("Warming model: \(selection.displayName, privacy: .public)")
+            _ = try await ensureServer(for: selection)
+            AppLog.whisper.info("Model is ready: \(selection.displayName, privacy: .public)")
+        } catch {
+            AppLog.whisper.error("Model warm-up failed: \(error.localizedDescription, privacy: .public)")
+        }
     }
 
     func transcribe(file: URL) async throws -> String {
         let selection = ModelManager.shared.activeSelection()
         let port = try await ensureServer(for: selection)
         try Task.checkCancellation()
+        let startedAt = ContinuousClock.now
 
         let boundary = "FuckWhispre-\(UUID().uuidString)"
         let body = try multipartBody(
@@ -85,6 +92,10 @@ actor LocalWhisperTranscriber {
         let text = String(data: data, encoding: .utf8)?
             .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         guard !text.isEmpty else { throw LocalWhisperError.emptyResult }
+        let elapsed = startedAt.duration(to: .now)
+        let components = elapsed.components
+        let seconds = Double(components.seconds) + Double(components.attoseconds) / 1e18
+        AppLog.whisper.info("Inference completed: seconds=\(seconds, privacy: .public), characters=\(text.count)")
         return text
     }
 
@@ -147,6 +158,7 @@ actor LocalWhisperTranscriber {
         } catch {
             throw LocalWhisperError.launchFailed(error.localizedDescription)
         }
+        AppLog.whisper.info("Launched local Whisper server: pid=\(process.processIdentifier), port=\(port), model=\(selection.displayName, privacy: .public)")
         processHolder.replace(with: process)
         serverProcess = process
         serverSelection = selection
