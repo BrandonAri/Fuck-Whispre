@@ -1,0 +1,10 @@
+/.build
+/dist
+/.swiftpm
+/.codex
+/Assets/AppIcon.iconset
+/Runtime/Models/*.bin
+/Vendor/whisper.cpp/build
+/Vendor/whisper.cpp/build-static
+.DS_Store
+/work
