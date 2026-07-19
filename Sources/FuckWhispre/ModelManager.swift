@@ -78,9 +78,7 @@ struct ModelManager: Sendable {
             return bundled
         }
         let downloaded = modelsDirectory.appendingPathComponent(selection.filename)
-        if FileManager.default.fileExists(atPath: downloaded.path) { return downloaded }
-        let legacy = legacyModelsDirectory.appendingPathComponent(selection.filename)
-        return FileManager.default.fileExists(atPath: legacy.path) ? legacy : nil
+        return FileManager.default.fileExists(atPath: downloaded.path) ? downloaded : nil
     }
 
     func makeDownload(
@@ -93,11 +91,6 @@ struct ModelManager: Sendable {
     var modelsDirectory: URL {
         let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         return support.appendingPathComponent("Fuck Whispre/Models", isDirectory: true)
-    }
-
-    private var legacyModelsDirectory: URL {
-        let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        return support.appendingPathComponent("Fuck Wispr Flow/Models", isDirectory: true)
     }
 
     enum DownloadError: LocalizedError {

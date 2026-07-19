@@ -1,5 +1,5 @@
 import XCTest
-@testable import FuckWisprFlow
+@testable import FuckWhispre
 
 final class DictationPolicyTests: XCTestCase {
     func testPressShorterThanHalfSecondIsRejected() {

@@ -1,7 +1,7 @@
 import OSLog
 
 enum AppLog {
-    private static let subsystem = "com.brandon.FuckWisprFlow"
+    private static let subsystem = "com.brandon.FuckWhispre"
 
     static let dictation = Logger(subsystem: subsystem, category: "Dictation")
     static let audio = Logger(subsystem: subsystem, category: "Audio")

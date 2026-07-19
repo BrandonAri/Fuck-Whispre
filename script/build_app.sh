@@ -8,8 +8,8 @@ case "$CONFIGURATION" in
 esac
 
 APP_NAME="Fuck Whispre"
-EXECUTABLE_NAME="FuckWisprFlow"
-BUNDLE_ID="com.brandon.FuckWisprFlow"
+EXECUTABLE_NAME="FuckWhispre"
+BUNDLE_ID="com.brandon.FuckWhispre"
 MIN_SYSTEM_VERSION="14.0"
 VERSION="1.0.1"
 BUILD_NUMBER="2"
@@ -18,7 +18,7 @@ DEFAULT_IDENTITY="91979A25F16143B38EEAD518501C7EAC113F4D52"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DIST_DIR="$ROOT_DIR/dist"
 DEST_APP_BUNDLE="$DIST_DIR/$APP_NAME.app"
-WORK_DIR="$(mktemp -d /private/tmp/fuck-wispr-flow-app.XXXXXX)"
+WORK_DIR="$(mktemp -d /private/tmp/fuck-whispre-app.XXXXXX)"
 trap 'rm -rf "$WORK_DIR"' EXIT
 APP_BUNDLE="$WORK_DIR/$APP_NAME.app"
 APP_CONTENTS="$APP_BUNDLE/Contents"

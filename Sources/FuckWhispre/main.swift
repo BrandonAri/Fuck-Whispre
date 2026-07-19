@@ -2,8 +2,8 @@ import AppKit
 
 @main
 @MainActor
-final class FuckWisprFlowApplication: NSObject, NSApplicationDelegate {
-    private static var retainedDelegate: FuckWisprFlowApplication?
+final class FuckWhispreApplication: NSObject, NSApplicationDelegate {
+    private static var retainedDelegate: FuckWhispreApplication?
     private let controller = DictationController()
     private var statusItem: NSStatusItem!
     private var menu: NSMenu!
@@ -17,7 +17,7 @@ final class FuckWisprFlowApplication: NSObject, NSApplicationDelegate {
 
     static func main() {
         let app = NSApplication.shared
-        let delegate = FuckWisprFlowApplication()
+        let delegate = FuckWhispreApplication()
         retainedDelegate = delegate
         app.delegate = delegate
         app.setActivationPolicy(.accessory)

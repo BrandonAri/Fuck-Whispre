@@ -2,12 +2,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "FuckWisprFlow",
+    name: "FuckWhispre",
     platforms: [.macOS(.v14)],
-    products: [.executable(name: "FuckWisprFlow", targets: ["FuckWisprFlow"])],
+    products: [.executable(name: "FuckWhispre", targets: ["FuckWhispre"])],
     targets: [
         .executableTarget(
-            name: "FuckWisprFlow",
+            name: "FuckWhispre",
             linkerSettings: [
                 .linkedFramework("AVFoundation"),
                 .linkedFramework("ApplicationServices"),
@@ -15,8 +15,8 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "FuckWisprFlowTests",
-            dependencies: ["FuckWisprFlow"]
+            name: "FuckWhispreTests",
+            dependencies: ["FuckWhispre"]
         )
     ]
 )

@@ -52,7 +52,7 @@ final class AudioRecorder: @unchecked Sendable {
         }
         sampleRate = format.sampleRate
         let url = FileManager.default.temporaryDirectory
-            .appendingPathComponent("fuck-wispr-flow-\(UUID().uuidString).wav")
+            .appendingPathComponent("fuck-whispre-\(UUID().uuidString).wav")
         let file = try AVAudioFile(forWriting: url, settings: format.settings)
 
         input.installTap(onBus: 0, bufferSize: 4096, format: format) { buffer, _ in

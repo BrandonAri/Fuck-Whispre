@@ -3,8 +3,8 @@ set -euo pipefail
 
 MODE="${1:-run}"
 APP_NAME="Fuck Whispre"
-EXECUTABLE_NAME="FuckWisprFlow"
-BUNDLE_ID="com.brandon.FuckWisprFlow"
+EXECUTABLE_NAME="FuckWhispre"
+BUNDLE_ID="com.brandon.FuckWhispre"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 APP_BUNDLE="$ROOT_DIR/dist/$APP_NAME.app"
 APP_BINARY="$APP_BUNDLE/Contents/MacOS/$EXECUTABLE_NAME"
