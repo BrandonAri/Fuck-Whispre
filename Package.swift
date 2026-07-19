@@ -13,6 +13,10 @@ let package = Package(
                 .linkedFramework("ApplicationServices"),
                 .linkedFramework("Security")
             ]
+        ),
+        .testTarget(
+            name: "FuckWisprFlowTests",
+            dependencies: ["FuckWisprFlow"]
         )
     ]
 )
